@@ -13,9 +13,9 @@ while (true)
     Console.WriteLine("6. Exit");
     Console.Write("Choose an option: ");
 
-    string choice = Console.ReadLine();
-    Console.WriteLine("the value you gave is " + choice);
-    //switch (choice)
+    string selected = Console.ReadLine();
+    Console.WriteLine("the value you gave is " + selected);
+    //switch (selected)
     //{
     //    case "1": CreateAccount(); break;
     //    case "2": Deposit(); break;
