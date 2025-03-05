@@ -42,13 +42,24 @@ namespace BankingSystem
 
         static void CreateAccount()
         {
+            
             int type;
-            Console.Write("Enter account type:\nType 1 for Normal account and Type 2 for savings account  ");
+            Console.Write("Enter account type:\nType 1 for Regular Account \nType 2 for Savings Account  ");
             type = int.Parse(Console.ReadLine());
+
+            
 
             //kichu common factors
             Console.Write("Enter Account Number: ");
             int accNumber = int.Parse(Console.ReadLine());
+
+            Accounts account = FindAccount(accNumber);
+            if (accounts.Exists(acc => acc.accNum == accNumber))
+            {
+                Console.WriteLine("Error: Account number already exists. Please use a different number.");
+                return;
+            }
+
 
             Console.Write("Enter Account Holder Name: ");
             string name = Console.ReadLine();
@@ -73,22 +84,37 @@ namespace BankingSystem
 
         static void Deposit()
         {
-            Console.Write("Enter Account Number: ");
-
-            int accNumber = int.Parse(Console.ReadLine());
-            Accounts account = FindAccount(accNumber);
-
-            if (account != null)
+            try
             {
-                Console.Write("Enter Deposit Amount: ");
-                double dpAmount = double.Parse(Console.ReadLine());
-                account.balance = account.balance + dpAmount;
-                Console.WriteLine("The new balance after withdraw is : " + account.balance);
+                Console.Write("Enter Account Number: ");
+
+                int accNumber = int.Parse(Console.ReadLine());
+                Accounts account = FindAccount(accNumber);
+
+                if (account != null)
+                {
+                    Console.Write("Enter Deposit Amount: ");
+                    double dpAmount = double.Parse(Console.ReadLine());
+                    if (dpAmount <= 0)
+                        throw new Exception("Deposit amount must be positive.");
+
+                    account.Deposit(dpAmount);
+
+                }
+                else
+                {
+                    Console.WriteLine("AccountNumber is not valid.");
+                }
             }
-            else
+            catch (FormatException)
             {
-                Console.WriteLine("AccountNumber is not valid.");
+                Console.WriteLine("Invalid input. Please enter numbers only.");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
         }
       
         static Accounts FindAccount(int accNumber)
@@ -97,25 +123,41 @@ namespace BankingSystem
         }
         static void Withdraw()
         {
-            Console.WriteLine("Enter a account number : ");
-            int accNumber = int.Parse(Console.ReadLine());
+
+            try
+            {
+                Console.WriteLine("Enter a account number : ");
+                int accNumber = int.Parse(Console.ReadLine());
+
+                Accounts account = FindAccount(accNumber);
+
+                if (account != null)
+                {
+                    Console.WriteLine("Enter a withdraw amount : ");
+                    int wdAmount = int.Parse(Console.ReadLine());
+                    if (wdAmount <= 0)
+                        throw new Exception("Withdrawal amount must be positive.");
+
+                    if (wdAmount > account.Balance)
+                        throw new Exception("Insufficient funds.");
+                    account.Withdraw(wdAmount);
+
+                }
+                else
+                {
+                    Console.WriteLine("AccountNumber is not valid ");
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid input. Please enter numbers only.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }     
 
             
-
-            Accounts account = FindAccount(accNumber);
-
-            if (account != null)
-            {
-                Console.WriteLine("Enter a withdraw amount : ");
-                int wdAmount = int.Parse(Console.ReadLine());
-
-                account.balance = account.balance - wdAmount;
-                Console.WriteLine("The new balance after withdraw is : " + account.balance);
-            }
-            else
-            {
-                Console.WriteLine("AccountNumber is not valid ");
-            }
         }
 
         static void CheckBalance()
@@ -127,7 +169,7 @@ namespace BankingSystem
 
             if (account != null)
             {
-                Console.WriteLine("The balance is : " + account.balance);
+                Console.WriteLine("The balance is : " + account.Balance);
             }
             else
             {
@@ -139,7 +181,18 @@ namespace BankingSystem
 
         static void ApplyInterest()
         {
-            Console.WriteLine("this is apply interest function ");
+            Console.Write("Enter Account Number: ");
+            int accNumber = int.Parse(Console.ReadLine());
+            Accounts account = FindAccount(accNumber);
+
+            if (account is SavingsAccount savingsAccount)
+            {
+                savingsAccount.ApplyInterest();
+            }
+            else
+            {
+                Console.WriteLine("Interest can only be applied to Savings Accounts.");
+            }
         }
 
     }

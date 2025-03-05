@@ -9,9 +9,12 @@ namespace BankingSystem
     class Accounts
     {
         
-        public int accNum;
-        public string name;
-        public double balance;
+        public int accNum { get; }
+        public string name { get; }
+        protected double balance;
+
+        public double Balance => balance;
+        //It provides encapsulation, allowing external code to read the balance but not modify it directly.
 
         public Accounts(int accNumber, string accName, double accBalance) 
         {
@@ -24,13 +27,25 @@ namespace BankingSystem
         {
             if (amount > 0)
             {
-                balance = balance + amount;
-                Console.WriteLine("Deposited " + amount);
-                Console.WriteLine("New balance: " + amount);
+                balance += amount;
+                Console.WriteLine($"Deposited ${amount:F2}. New balance: ${balance:F2}");
             }
             else
             {
                 Console.WriteLine("Invalid deposit amount.");
+            }
+        }
+
+        public virtual void Withdraw(double amount)
+        {
+            if (amount > 0 && amount <= balance)
+            {
+                balance -= amount;
+                Console.WriteLine($"Withdrew ${amount:F2}. Remaining balance: ${balance:F2}");
+            }
+            else
+            {
+                Console.WriteLine("Invalid withdrawal amount.");
             }
         }
     }
